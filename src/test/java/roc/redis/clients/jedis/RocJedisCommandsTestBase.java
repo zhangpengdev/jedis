@@ -4,16 +4,15 @@ import org.junit.After;
 import org.junit.Before;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.HostAndPorts;
 import redis.clients.jedis.Jedis;
 
-public abstract class JedisCommandsTestBase {
+public abstract class RocJedisCommandsTestBase {
 
-  protected static final HostAndPort hnp = HostAndPorts.getRedisServers().get(0);
+  protected static final HostAndPort hnp = RocHostAndPorts.getRedisServers().get(0);
 
   protected Jedis jedis;
 
-  public JedisCommandsTestBase() {
+  public RocJedisCommandsTestBase() {
     super();
   }
 
