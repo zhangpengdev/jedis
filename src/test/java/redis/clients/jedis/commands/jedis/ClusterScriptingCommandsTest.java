@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 import org.junit.Test;
 
 import redis.clients.jedis.args.FlushMode;
@@ -90,5 +93,21 @@ public class ClusterScriptingCommandsTest extends ClusterJedisCommandsTestBase {
     byte[] sha1 = cluster.scriptLoad("return redis.call('get','foo')".getBytes(), byteKey);
     byte[][] arraySha1 = { sha1 };
     assertEquals(Collections.singletonList(Boolean.TRUE), cluster.scriptExists(byteKey, arraySha1));
+  }
+
+  @Test
+  public void broadcast() {
+
+    String script_1 = "return 'jedis'";
+    String sha1_1 = cluster.scriptLoad(script_1);
+
+    String script_2 = "return 79";
+    String sha1_2 = cluster.scriptLoad(script_2);
+
+    assertEquals(Arrays.asList(true, true), cluster.scriptExists(Arrays.asList(sha1_1, sha1_2)));
+
+    cluster.scriptFlush();
+
+    assertEquals(Arrays.asList(false, false), cluster.scriptExists(Arrays.asList(sha1_1, sha1_2)));
   }
 }
