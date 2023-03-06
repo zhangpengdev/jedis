@@ -8,6 +8,11 @@ import redis.clients.jedis.params.StrAlgoLCSParams;
 import redis.clients.jedis.resps.LCSMatchResult;
 import redis.clients.jedis.resps.LCSMatchResult.MatchedPosition;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +26,35 @@ public class StringValuesCommandsTest extends RocJedisCommandsTestBase {
     String status = jedis.set("foo", "bar");
     assertEquals("OK", status);
 
+    status = jedis.set("roc", "哈哈 啊飒飒打撒sddsds");
+
     String value = jedis.get("foo");
     assertEquals("bar", value);
 
     assertNull(jedis.get("bar"));
+  }
+
+  @Test
+  public void testSocket() throws IOException {
+      Socket socket = new Socket();
+
+      socket.setReuseAddress(true);
+      socket.setKeepAlive(true); // Will monitor the TCP connection is valid
+      socket.setTcpNoDelay(true); // Socket buffer Whetherclosed, to ensure timely delivery of data
+      socket.setSoLinger(true, 0); // Control calls close () method, the underlying socket is closed immediately
+
+      socket.connect(new InetSocketAddress("192.168.75.131", 3306), 2000);
+
+      boolean keepAlive = socket.getKeepAlive();
+      System.out.println(keepAlive);
+
+      OutputStream outputStream = socket.getOutputStream();
+      outputStream.write("aaa".getBytes());
+
+
+    if (socket.isConnected()) {
+        socket.close();
+      }
   }
 
   @Test
