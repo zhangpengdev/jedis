@@ -1,6 +1,8 @@
 package roc.redis.clients.jedis;
 
+import org.json.JSONObject;
 import org.junit.Test;
+import redis.clients.jedis.Transaction;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.params.GetExParams;
 import redis.clients.jedis.params.LCSParams;
@@ -33,6 +35,35 @@ public class StringValuesCommandsTest extends RocJedisCommandsTestBase {
 
     assertNull(jedis.get("bar"));
   }
+
+    /**
+     * 事务测试
+     */
+  @Test
+  public void testTran() {
+      Transaction multi = jedis.multi();
+//      String s = jedis.flushDB();
+
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put("hello","word");
+      jsonObject.put("name","lingg");
+      String result = jsonObject.toString();
+
+      try {
+          multi .set("user1",result);
+          multi.set("user2",result);
+          multi.get("qwe");
+          multi.exec();
+      } catch (Exception e) {
+          multi.discard();
+          e.printStackTrace();
+      } finally {
+          System.out.println(jedis.get("user1"));
+          System.out.println(jedis.get("user2"));
+          jedis.close();
+      }
+  }
+
 
   @Test
   public void testSocket() throws IOException {
